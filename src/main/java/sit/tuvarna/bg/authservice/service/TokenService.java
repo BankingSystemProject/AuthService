@@ -142,30 +142,6 @@ public class TokenService {
         return MessageResponse.builder().success(true).message("Token blacklisted").build();
     }
 
-    /**
-     * Blacklist ALL currently-valid tokens for a user by userId.
-     *
-     * Important caveat: since we no longer store issued tokens, we cannot
-     * enumerate them to blacklist them individually. This method exists as
-     * an integration point — the actual enforcement relies on the user-service
-     * also invalidating any tokens it has cached. The recommended pattern is:
-     *
-     *   Option A (simple): store roles + a `tokenVersion` in the refresh token
-     *   claim; bump the version on password-change; validate version in /validate.
-     *
-     *   Option B (stateful): re-introduce a lightweight issued-token table
-     *   only if you need full per-user revocation without token versions.
-     *
-     * For now this endpoint records the intent and returns a clear message.
-     */
-    public MessageResponse revokeAll(String userId, String reason) {
-        log.info("revokeAll requested for userId={} reason={}", userId, reason);
-        return MessageResponse.builder()
-                .success(true)
-                .message("All future token validations for userId=" + userId +
-                        " should be rejected. Re-issue tokens after resolving the cause.")
-                .build();
-    }
 
     private ValidateResponse invalid(String message) {
         return ValidateResponse.builder().valid(false).message(message).build();

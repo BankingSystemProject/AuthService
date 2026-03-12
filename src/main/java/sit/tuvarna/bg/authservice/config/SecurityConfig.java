@@ -38,15 +38,16 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Internal-only (guarded by InternalApiKeyFilter)
-                        .requestMatchers("/api/v1/tokens/issue").permitAll()
-                        .requestMatchers("/api/v1/tokens/revoke-all").permitAll()
+                        .requestMatchers("/api/v1/auth/issue").permitAll()
                         // Public — caller doesn't have a valid token yet
-                        .requestMatchers("/api/v1/tokens/validate").permitAll()
-                        .requestMatchers("/api/v1/tokens/refresh").permitAll()
+                        .requestMatchers("/api/v1/auth/validate").permitAll()
+                        .requestMatchers("/api/v1/auth/refresh").permitAll()
                         // Must carry a valid Bearer token
-                        .requestMatchers("/api/v1/tokens/blacklist").authenticated()
+                        .requestMatchers("/api/v1/auth/blacklist").authenticated()
                         // Dev / ops
-                        .requestMatchers("/actuator/health", "/h2-console/**").permitAll()
+                        .requestMatchers("/actuator/health").permitAll()
+                        // Permitting Swagger UI and OpenAPI docs
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .anyRequest().denyAll()
                 )
                 .addFilterBefore(internalApiKeyFilter, UsernamePasswordAuthenticationFilter.class)

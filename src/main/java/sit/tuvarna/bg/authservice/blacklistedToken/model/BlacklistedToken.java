@@ -19,7 +19,7 @@ public class BlacklistedToken {
 
     @Id
     private String jti;
-    @Column(nullable = false)
+    @Column(nullable = false,name = "expires_at")
     private Instant expiresAt;
 
     @Column(nullable = false)

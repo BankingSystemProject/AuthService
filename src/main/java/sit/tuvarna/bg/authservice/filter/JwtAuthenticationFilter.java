@@ -19,6 +19,7 @@ import sit.tuvarna.bg.authservice.blacklistedToken.service.BlacklistedTokenServi
 import sit.tuvarna.bg.authservice.service.JwtService;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,9 +32,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-           FilterChain chain) throws ServletException, IOException {
+                                    FilterChain chain) throws ServletException, IOException {
 
         String token = extractToken(request);
 
@@ -45,7 +47,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     Claims claims = jwtService.parseAllClaims(token);
 
                     @SuppressWarnings("unchecked")
-                    List<String> roles = (List<String>) claims.getOrDefault("roles", List.of());
+                    List<String> roles = (List<String>) claims.get("roles");
+                    if (roles == null) {
+                        roles = Collections.emptyList();
+                    }
 
                     List<SimpleGrantedAuthority> authorities = roles.stream()
                             .map(SimpleGrantedAuthority::new)
@@ -75,10 +80,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        // Skip filter for public auth endpoints to reduce overhead
+        // Skip filter for public auth endpoints or internal-only endpoints to reduce overhead
         String path = request.getServletPath();
-        return path.startsWith("/api/v1/auth/login")
-                || path.startsWith("/api/v1/auth/register")
-                || path.startsWith("/api/v1/auth/refresh");
+        return path.startsWith("/api/v1/auth/refresh")
+                || path.startsWith("/api/v1/auth/validate")
+                || path.startsWith("/api/v1/auth/issue");
     }
 }

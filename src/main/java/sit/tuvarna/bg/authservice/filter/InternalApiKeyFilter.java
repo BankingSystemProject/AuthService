@@ -30,7 +30,7 @@ public class InternalApiKeyFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         String servletPath = request.getServletPath();
-        if(!isProtectedPath(servletPath)) {
+        if(! servletPath.equals("/api/v1/auth/issue")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -56,8 +56,4 @@ public class InternalApiKeyFilter extends OncePerRequestFilter {
         ));
     }
 
-    private boolean isProtectedPath(String path) {
-        return path.equals("/api/v1/tokens/issue")
-                || path.equals("/api/v1/tokens/revoke-all");
-    }
 }

@@ -1,11 +1,16 @@
 package sit.tuvarna.bg.authservice.web.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import sit.tuvarna.bg.authservice.service.TokenService;
 import sit.tuvarna.bg.authservice.web.dto.requests.BlacklistRequest;
 import sit.tuvarna.bg.authservice.web.dto.requests.IssueRequest;
@@ -18,6 +23,7 @@ import sit.tuvarna.bg.authservice.web.dto.responses.ValidateResponse;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@Tag(name = "Token Controller",description = "Managing jwt tokens")
 public class TokenController {
 
     private final TokenService tokenService;
@@ -36,6 +42,11 @@ public class TokenController {
      *   "roles":    ["ROLE_USER"]
      * }
      */
+    @Operation(
+            summary = "Issues jwt tokens",
+            description = "Creates refresh and access token",
+            security = @SecurityRequirement(name = "internalApiKey")
+    )
     @PostMapping("/issue")
     public ResponseEntity<TokenPairResponse> issue(
             @Valid @RequestBody IssueRequest request) {
@@ -90,17 +101,4 @@ public class TokenController {
         return ResponseEntity.ok(tokenService.blacklist(request));
     }
 
-    /**
-     * POST /api/v1/tokens/revoke-all?userId={userId}&reason={reason}
-     * Revoke all active refresh tokens for a given user.
-     * Used by the user-service on password change, account lock, etc.
-     *
-     * Security: requires X-Internal-Api-Key header (enforced by InternalApiKeyFilter).
-     */
-    @PostMapping("/revoke-all")
-    public ResponseEntity<MessageResponse> revokeAll(
-            @RequestParam @NotBlank String userId,
-            @RequestParam(required = false, defaultValue = "admin_revocation") String reason) {
-        return ResponseEntity.ok(tokenService.revokeAll(userId, reason));
-    }
 }
