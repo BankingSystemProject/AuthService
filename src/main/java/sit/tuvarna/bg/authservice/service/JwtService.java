@@ -14,8 +14,10 @@ import sit.tuvarna.bg.authservice.config.JwtProperties;
 import javax.crypto.SecretKey;
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -105,6 +107,17 @@ public class JwtService {
 
     public Instant extractIssuedAt(String token) {
         return parseAllClaims(token).getIssuedAt().toInstant();
+    }
+
+    public Set<String> extractRoles(Claims claims) {
+        Object raw = claims.get("roles");
+        if(raw instanceof List<?> list){
+            return list.stream()
+                    .filter(String.class::isInstance)
+                    .map(String.class::cast)
+                    .collect(Collectors.toSet());
+        }
+        return Set.of();
     }
 
     public long accessExpiresInSeconds(){

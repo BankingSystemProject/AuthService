@@ -3,9 +3,7 @@ package sit.tuvarna.bg.authservice.blacklistedToken.service;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import sit.tuvarna.bg.authservice.blacklistedToken.model.BlacklistedToken;
 import sit.tuvarna.bg.authservice.blacklistedToken.repository.BlacklistedTokenRepository;
 import sit.tuvarna.bg.authservice.service.JwtService;
@@ -23,8 +21,7 @@ public class BlacklistedTokenService {
         this.blacklistedTokenRepository = blacklistedTokenRepository;
         this.jwtService = jwtService;
     }
-    @Transactional
-//    @CachePut(value = "blacklist", key = "#result.jti")
+
     public void blacklist(String rawToken, String reason) {
         Claims claims = resolveClaims(rawToken);
 
@@ -68,7 +65,6 @@ public class BlacklistedTokenService {
             return true;
         }
     }
-    @Cacheable(value = "blacklist", key = "#jti")
     public boolean isJtiBlacklisted(String jti) {
         return blacklistedTokenRepository.existsByJti(jti);
     }

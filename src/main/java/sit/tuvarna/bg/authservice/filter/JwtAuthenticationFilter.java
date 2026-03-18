@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import sit.tuvarna.bg.authservice.blacklistedToken.service.BlacklistedTokenService;
+import sit.tuvarna.bg.authservice.model.dto.AuthError;
+import sit.tuvarna.bg.authservice.model.dto.AuthErrorCode;
 import sit.tuvarna.bg.authservice.service.JwtService;
 
 import java.io.IOException;
@@ -64,6 +66,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             } catch (JwtException | IllegalArgumentException e) {
                 log.debug("JWT filter rejected token: {}", e.getMessage());
+                throw new AuthError(AuthErrorCode.MALFORMED_TOKEN, e.getMessage());
             }
         }
 
@@ -71,13 +74,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
 
-    private String extractToken(HttpServletRequest request){
+    private String extractToken(HttpServletRequest request) {
         String header = request.getHeader(AUTHORIZATION_HEADER);
-        if(StringUtils.hasText(header) &&  header.startsWith(BEARER_PREFIX)){
-            return  header.substring(BEARER_PREFIX.length());
+        if (StringUtils.hasText(header) && header.startsWith(BEARER_PREFIX)) {
+            return header.substring(BEARER_PREFIX.length());
         }
         return null;
     }
+
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         // Skip filter for public auth endpoints or internal-only endpoints to reduce overhead
