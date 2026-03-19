@@ -1,4 +1,5 @@
 name: CI - Build & Test
+run-name: "CI Pipeline – ${{ github.event.pull_request.title || github.ref_name }}"
 on:
   push:
     branches: [ "main" ]

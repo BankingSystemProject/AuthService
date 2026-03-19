@@ -1,5 +1,5 @@
 name: CodeQL
-
+run-name: "CodeQL Scan – ${{ github.event.pull_request.title || github.ref_name }}"
 on:
   push:
     branches: [ "main" ]
