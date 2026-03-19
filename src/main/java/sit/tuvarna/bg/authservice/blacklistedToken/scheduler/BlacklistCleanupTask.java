@@ -11,8 +11,6 @@ import java.time.Instant;
 
 @Component
 @Slf4j
-@ConditionalOnProperty(name = "blacklist.cleanup.enabled", havingValue = "true", matchIfMissing = true)
-
 public class BlacklistCleanupTask {
 
     private final BlacklistedTokenRepository blacklistedTokenRepository;
