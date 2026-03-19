@@ -26,4 +26,4 @@ jobs:
             dockerfile: Dockerfile
 
       - name: Build and test
-        run: mvn -B clean verify
+        run: ./mvnw -B clean verify
