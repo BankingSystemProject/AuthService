@@ -25,5 +25,8 @@ jobs:
         with:
             dockerfile: Dockerfile
 
+      - name: Make mvnw executable
+        run: chmod +x mvnw
+
       - name: Build and test
-        run: mvn -B clean verify
+        run: ./mvnw -B clean verify
