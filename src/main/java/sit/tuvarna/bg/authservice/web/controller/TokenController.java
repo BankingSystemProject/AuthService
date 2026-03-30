@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import sit.tuvarna.bg.authservice.model.dto.AuthError;
+import sit.tuvarna.bg.authservice.exception.AuthError;
 import sit.tuvarna.bg.authservice.service.TokenService;
 import sit.tuvarna.bg.authservice.web.dto.requests.BlacklistRequest;
 import sit.tuvarna.bg.authservice.web.dto.requests.IssueRequest;

@@ -9,8 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.filter.OncePerRequestFilter;
 import sit.tuvarna.bg.authservice.config.InternalApiKeyProperties;
-import sit.tuvarna.bg.authservice.model.dto.AuthError;
-import sit.tuvarna.bg.authservice.model.dto.AuthErrorCode;
+import sit.tuvarna.bg.authservice.exception.AuthError;
+import sit.tuvarna.bg.authservice.enums.AuthErrorCode;
 
 import java.io.IOException;
 

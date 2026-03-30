@@ -3,7 +3,7 @@ package sit.tuvarna.bg.authservice.web.controller;
 import io.vavr.control.Either;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import sit.tuvarna.bg.authservice.model.dto.AuthError;
+import sit.tuvarna.bg.authservice.exception.AuthError;
 import sit.tuvarna.bg.authservice.web.dto.responses.SimpleErrorResponse;
 
 import java.util.function.Function;

@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import sit.tuvarna.bg.authservice.model.dto.AuthError;
+import sit.tuvarna.bg.authservice.exception.AuthError;
 import sit.tuvarna.bg.authservice.web.dto.responses.ValidationErrorResponse;
 
 import java.util.List;

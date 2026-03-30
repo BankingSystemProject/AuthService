@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import sit.tuvarna.bg.authservice.blacklistedToken.service.BlacklistedTokenService;
-import sit.tuvarna.bg.authservice.model.dto.AuthError;
-import sit.tuvarna.bg.authservice.model.dto.AuthErrorCode;
+import sit.tuvarna.bg.authservice.exception.AuthError;
+import sit.tuvarna.bg.authservice.enums.AuthErrorCode;
 import sit.tuvarna.bg.authservice.service.JwtService;
 
 import java.io.IOException;

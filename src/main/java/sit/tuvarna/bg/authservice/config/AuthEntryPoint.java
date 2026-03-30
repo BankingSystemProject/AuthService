@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
-import sit.tuvarna.bg.authservice.model.dto.AuthErrorCode;
+import sit.tuvarna.bg.authservice.enums.AuthErrorCode;
 import sit.tuvarna.bg.authservice.web.dto.responses.SimpleErrorResponse;
 
 import java.io.IOException;

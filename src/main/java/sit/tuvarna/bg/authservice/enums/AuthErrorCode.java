@@ -1,4 +1,4 @@
-package sit.tuvarna.bg.authservice.model.dto;
+package sit.tuvarna.bg.authservice.enums;
 
 public enum AuthErrorCode {
     BAD_API_KEY,
