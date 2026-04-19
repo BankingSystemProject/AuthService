@@ -1,0 +1,59 @@
+# Test profile for auth-service
+
+# Server configuration for tests
+server:
+  port: 8081
+
+spring:
+  application:
+    name: auth-service-test
+
+  datasource:
+    url: jdbc:h2:mem:authdb;DB_CLOSE_DELAY=-1
+    username: sa
+    password: sa
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+
+# JWT test values
+jwt:
+  secret: test-secret-key-1234567890
+  refresh-token-expiration: 3600000
+  access-token-expiration: 600000
+  issuer: TestIssuer
+
+# Logging
+logging:
+  level:
+    root: INFO
+    org.springframework.security: INFO
+    sit.tuvarna.bg.authservice: DEBUG
+
+# Feign client test URL
+services:
+  user:
+    url: http://localhost:8082
+
+# TOTP
+security:
+  totp:
+    issuer: TestAuthService
+
+# Management port (for actuator)
+management:
+  server:
+    port: 8081
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+

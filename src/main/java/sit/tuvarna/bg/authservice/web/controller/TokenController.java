@@ -36,12 +36,11 @@ public class TokenController extends BaseController {
     private final TokenService tokenService;
 
     // ------------------------------------------------------------
-    //  /issue  — requires internal API key
+    //  /issue  — public
     // ------------------------------------------------------------
     @Operation(
             summary = "Issues jwt token pair",
-            description = "Creates refresh and access token.Requires X-Internal-Api-Key header.",
-            security = @SecurityRequirement(name = "internalApiKey")
+            description = "Creates refresh and access token."
     )
     @ApiResponses({
             @ApiResponse(
@@ -77,14 +76,14 @@ public class TokenController extends BaseController {
             ),
             @ApiResponse(
                     responseCode = "401",
-                    description = "Missing or invalid internal API key",
+                    description = "Invalid credentials or user not found",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = SimpleErrorResponse.class),
                             examples = @ExampleObject("""
                             {
                               "code": "UNAUTHORIZED",
-                              "message": "Invalid internal API key"
+                              "message": "Invalid credentials"
                             }
                             """)
                     )

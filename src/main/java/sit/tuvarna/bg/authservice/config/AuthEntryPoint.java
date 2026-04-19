@@ -20,9 +20,9 @@ public class AuthEntryPoint implements AuthenticationEntryPoint {
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType("application/json");
-            SimpleErrorResponse error = new SimpleErrorResponse(
-                AuthErrorCode.BAD_API_KEY.name(),
-                "Missing or invalid X-Internal-Api-Key header"
+        SimpleErrorResponse error = new SimpleErrorResponse(
+                AuthErrorCode.UNAUTHENTICATED.name(),
+                "Missing or invalid authentication credentials"
         );
 
         new ObjectMapper().writeValue(response.getWriter(), error);

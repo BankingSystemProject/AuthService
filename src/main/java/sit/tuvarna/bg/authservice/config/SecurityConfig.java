@@ -17,7 +17,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import sit.tuvarna.bg.authservice.filter.InternalApiKeyFilter;
 import sit.tuvarna.bg.authservice.filter.JwtAuthenticationFilter;
 
 import java.util.List;
@@ -31,20 +30,20 @@ public class SecurityConfig {
     private final AuthEntryPoint authEntryPoint;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, InternalApiKeyFilter internalApiKeyFilter) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(authEntryPoint))
                 .authorizeHttpRequests(auth -> auth
-                        // Internal-only (guarded by InternalApiKeyFilter)
-                        .requestMatchers("/api/v1/auth/issue").permitAll()
                         // Public — caller doesn't have a valid token yet
+                        .requestMatchers("/api/v1/auth/issue").permitAll()
                         .requestMatchers("/api/v1/auth/validate").permitAll()
                         .requestMatchers("/api/v1/auth/refresh").permitAll()
                         // Must carry a valid Bearer token
                         .requestMatchers("/api/v1/auth/blacklist").authenticated()
+                        .requestMatchers("/api/v1/2fa/**").authenticated()
                         // Dev / ops
                         .requestMatchers("/actuator/health").permitAll()
                         // Permitting Swagger UI and OpenAPI docs
@@ -52,7 +51,6 @@ public class SecurityConfig {
                         .anyRequest().denyAll()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(internalApiKeyFilter, UsernamePasswordAuthenticationFilter.class)
                 .headers(h -> h.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
 
         return http.build();
@@ -69,10 +67,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder(12);
     }
 
-    @Bean
-    public InternalApiKeyFilter internalApiKeyFilter(InternalApiKeyProperties props) {
-        return new InternalApiKeyFilter(props);
-    }
 
 
     @Bean
