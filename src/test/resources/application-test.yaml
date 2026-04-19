@@ -1,5 +1,9 @@
 # Test profile for auth-service
 
+# Server configuration for tests
+server:
+  port: 8081
+
 spring:
   application:
     name: auth-service-test
@@ -31,7 +35,7 @@ logging:
     org.springframework.security: INFO
     sit.tuvarna.bg.authservice: DEBUG
 
-# Feign client test URL (fixes the malformed URL error)
+# Feign client test URL
 services:
   user:
     url: http://localhost:8082
@@ -40,3 +44,16 @@ services:
 security:
   totp:
     issuer: TestAuthService
+
+# Management port (for actuator)
+management:
+  server:
+    port: 8081
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
