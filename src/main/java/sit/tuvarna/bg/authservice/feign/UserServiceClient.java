@@ -22,4 +22,7 @@ public interface UserServiceClient {
 
     @PostMapping("/api/v1/internal/{userId}/2fa/enable")
     void enableTwoFactor(@PathVariable UUID userId);
+
+    @GetMapping("/api/v1/internal/users/{userId}/tokens-valid-from")
+    long getTokensValidFrom(@PathVariable UUID userId);
 }

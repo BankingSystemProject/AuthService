@@ -1,6 +1,5 @@
 package sit.tuvarna.bg.authservice.exception;
 
-
 import lombok.Getter;
 import sit.tuvarna.bg.authservice.enums.AuthErrorCode;
 

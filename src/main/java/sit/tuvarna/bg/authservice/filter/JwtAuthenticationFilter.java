@@ -48,6 +48,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                     Claims claims = jwtService.parseAllClaims(token);
 
+                    // Only access tokens may authenticate protected endpoints — a
+                    // (longer-lived) refresh token must not be usable as a Bearer.
+                    if (!"access".equals(claims.get("type"))) {
+                        throw new AuthError(AuthErrorCode.UNAUTHENTICATED, "Not an access token");
+                    }
+
                     @SuppressWarnings("unchecked")
                     List<String> roles = (List<String>) claims.get("roles");
                     if (roles == null) {

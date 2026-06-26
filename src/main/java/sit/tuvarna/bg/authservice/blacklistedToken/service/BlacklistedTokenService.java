@@ -3,6 +3,8 @@ package sit.tuvarna.bg.authservice.blacklistedToken.service;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import sit.tuvarna.bg.authservice.blacklistedToken.model.BlacklistedToken;
 import sit.tuvarna.bg.authservice.blacklistedToken.repository.BlacklistedTokenRepository;
@@ -22,6 +24,9 @@ public class BlacklistedTokenService {
         this.jwtService = jwtService;
     }
 
+    // Evict the cached "not blacklisted" result the moment a token is blacklisted,
+    // so the JWT filter sees the change on its very next check (no TTL window).
+    @CacheEvict(value = "blacklistChecks", key = "#rawToken")
     public void blacklist(String rawToken, String reason) {
         Claims claims = resolveClaims(rawToken);
 
@@ -50,6 +55,9 @@ public class BlacklistedTokenService {
         blacklistedTokenRepository.save(blacklistedToken);
     }
 
+    // Checked on every authenticated request. Cached by token so the DB
+    // existsByJti lookup isn't repeated; evicted on blacklist() so it stays correct.
+    @Cacheable(value = "blacklistChecks", key = "#rawToken")
     public boolean isBlacklisted(String rawToken) {
         try {
             // Use parseExpiredClaims so we can still check blacklist on expired tokens

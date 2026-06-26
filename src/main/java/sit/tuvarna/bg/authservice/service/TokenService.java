@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import sit.tuvarna.bg.authservice.blacklistedToken.service.BlacklistedTokenService;
 import sit.tuvarna.bg.authservice.exception.AuthError;
 import sit.tuvarna.bg.authservice.enums.AuthErrorCode;
+import sit.tuvarna.bg.authservice.feign.UserServiceClient;
 import sit.tuvarna.bg.authservice.web.dto.requests.BlacklistRequest;
 import sit.tuvarna.bg.authservice.web.dto.requests.IssueRequest;
 import sit.tuvarna.bg.authservice.web.dto.requests.RefreshRequest;
@@ -18,7 +19,9 @@ import sit.tuvarna.bg.authservice.web.dto.responses.MessageResponse;
 import sit.tuvarna.bg.authservice.web.dto.responses.TokenPairResponse;
 import sit.tuvarna.bg.authservice.web.dto.responses.ValidateResponse;
 
+import java.time.Instant;
 import java.util.Set;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -27,6 +30,7 @@ public class TokenService {
 
     private final JwtService jwtService;
     private final BlacklistedTokenService blacklistService;
+    private final UserServiceClient userServiceClient;
 
     public Either<AuthError,TokenPairResponse> issue(IssueRequest req) {
 
@@ -86,9 +90,21 @@ public class TokenService {
                 return Either.<AuthError, TokenPairResponse>left(new AuthError(AuthErrorCode.BLACKLISTED_TOKEN,"Refresh token has been revoked"));
             }
 
+            String userId = jwtService.extractUserId(oldToken);
+
+            // Session-invalidation gate: reject refresh tokens issued before the user's
+            // tokensValidFrom (bumped on password change). Compared at second granularity
+            // because JWT iat has second precision. 0 = no gate.
+            long validFromMillis = userServiceClient.getTokensValidFrom(UUID.fromString(userId));
+            if (validFromMillis > 0) {
+                Instant iat = jwtService.extractIssuedAt(oldToken);
+                if (iat.getEpochSecond() < validFromMillis / 1000) {
+                    return Either.<AuthError, TokenPairResponse>left(new AuthError(AuthErrorCode.INVALID_TOKEN,"Session invalidated; please log in again"));
+                }
+            }
+
             blacklistService.blacklist(oldToken, "token_rotation");
 
-            String userId = jwtService.extractUserId(oldToken);
             String username = jwtService.extractUsername(oldToken);
 
             String newAccess = jwtService.generateAccessToken(userId, username, jwtService.extractRoles(jwtService.parseAllClaims(oldToken)));

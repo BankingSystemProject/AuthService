@@ -96,17 +96,33 @@ public class JwtService {
 
 
     public String extractUserId(String token){
-        return parseAllClaims(token).get("userId").toString();
+        Object userId = parseAllClaims(token).get("userId");
+        if (userId == null) {
+            throw new JwtException("Missing 'userId' claim in token");
+        }
+        return userId.toString();
     }
     public String extractType(String token){
-        return parseAllClaims(token).get("type").toString();
+        Object type = parseAllClaims(token).get("type");
+        if (type == null) {
+            throw new JwtException("Missing 'type' claim in token");
+        }
+        return type.toString();
     }
     public Instant extractExpiration(String token) {
-        return parseAllClaims(token).getExpiration().toInstant();
+        Date exp = parseAllClaims(token).getExpiration();
+        if (exp == null) {
+            throw new JwtException("Missing 'exp' claim in token");
+        }
+        return exp.toInstant();
     }
 
     public Instant extractIssuedAt(String token) {
-        return parseAllClaims(token).getIssuedAt().toInstant();
+        Date iat = parseAllClaims(token).getIssuedAt();
+        if (iat == null) {
+            throw new JwtException("Missing 'iat' claim in token");
+        }
+        return iat.toInstant();
     }
 
     public Set<String> extractRoles(Claims claims) {
